@@ -1,0 +1,11 @@
+#index{
+    color:blue;
+}
+
+.projects{
+    color:green;
+}
+
+a:hover{
+    color:red;
+}
