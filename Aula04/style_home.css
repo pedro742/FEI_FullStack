@@ -1,0 +1,50 @@
+.div1{
+    padding: 15px 20px;
+    flex-direction:row;
+    align-content: center;
+    display: flex;
+    justify-content: space-between;
+    text-decoration: none;
+    font-size: 20px;
+}
+.div1 a:hover{
+    text-decoration: underline;
+}
+.div1 a{
+    text-decoration: none;
+}
+.assine_fundo{
+    background-color: red;
+    color: white;
+}
+.div2{
+    align-content: flex-end;
+    flex-direction: row;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-around;
+}
+.div2 a:hover{
+    text-decoration: underline;
+}
+.div2 a{
+    text-decoration: none;
+}
+.div3{
+    flex-direction:row;
+    align-content: center;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    color: red;
+    font-size: 30px;
+}
+.div4{
+    flex-direction:row;
+    align-content: center;
+    display: flex;
+    justify-content: space-between;
+}
+.img2{
+    background-color: red;
+}
