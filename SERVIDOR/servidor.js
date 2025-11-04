@@ -1,71 +1,65 @@
-var http = require('http');
-var express = require('express');
-var colors = require('colors');
-var bodyParser = require('body-parser');
-var path = require('path'); // Incluindo o módulo 'path'
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
-var app = express();
-app.use(express.static('./public'));
-app.use(bodyParser.urlencoded({ extended: false}))
-app.use(bodyParser.json())
-app.set('view engine', 'ejs')
-app.set('views', './views');
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const USUARIOS = [{ email: 'admin@site.com', senha: '123' }]; 
+// Middleware para ler formulários
+app.use(express.urlencoded({ extended: true }));
 
-var server = http.createServer(app);
-server.listen(80);
-console.log('Servidor rodando...'.rainbow);
+// Pasta para arquivos estáticos (CSS, JS, imagens)
+app.use(express.static(path.join(__dirname, "public")));
 
-//Inicia na página de projects
-app.get('/', function (requisicao, resposta){
-    resposta.redirect('../LAB02_Projects/Projects.html');
+// Configuração do EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+// Simulação de "banco de dados" em memória
+const usuarios = [];
+
+// Rotas HTML
+app.get("/cadastra", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "Cadastro.html"));
 });
 
-
-
-app.get('/cadastra',function (requisicao, resposta){
-    // [CORREÇÃO 2] Uso de path.join e __dirname para caminho absoluto
-    resposta.sendFile(path.join(__dirname, 'public', 'LAB08', 'cadastro.html'));
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "login.html"));
 });
 
+// Recebe dados do cadastro
+app.post("/enviar_cadastro", (req, res) => {
+  const { nome, email, senha } = req.body;
 
-app.post('/cadastra', function (requisicao, resposta) {
-    
-    const { nomecompleto, email, senha } = requisicao.body;
-    
-    // Simulação de salvar o usuário
-    USUARIOS.push({ email, senha });
-    console.log(`Novo Usuário Cadastrado: ${email}`);
+  // Salva usuário em memória
+  usuarios.push({ nome, email, senha });
+  console.log("Novo cadastro:", { nome, email });
 
-    resposta.render('resposta_cadastro', { 
-        status: 'Sucesso no Cadastro!', 
-        mensagem: `O usuário ${nomecompleto} foi cadastrado com sucesso. Total de usuários: ${USUARIOS.length}.`
+  // Redireciona para login com mensagem de sucesso
+  res.redirect("/login?sucesso=true");
+});
+
+// Recebe dados do login
+app.post("/fazer_login", (req, res) => {
+  const { email, senha } = req.body;
+
+  const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+
+  if (usuario) {
+    res.render("resposta", {
+      tipo: "login",
+      nome: usuario.nome,
+      status: "realizado com sucesso!"
     });
+  } else {
+    res.render("resposta", {
+      tipo: "login",
+      nome: email,
+      status: "falhou. Usuário ou senha incorretos."
+    });
+  }
 });
 
-
-app.get('/login',function (requisicao, resposta){
-    // [CORREÇÃO 2] Uso de path.join e __dirname para caminho absoluto
-    resposta.sendFile(path.join(__dirname, 'public', 'LAB08', 'login.html'));
-});
-
-
-app.post('/login', function (requisicao, resposta) {
-   
-    const { email, senha } = requisicao.body;
-
-    
-    const usuarioEncontrado = USUARIOS.find(user => user.email === email && user.senha === senha);
-    
-    let status, mensagem;
-    if (usuarioEncontrado) {
-        status = 'Sucesso no Login!';
-        mensagem = `Bem-vindo(a), ${email}!`;
-    } else {
-        status = 'Falha no Login!';
-        mensagem = 'Email ou senha inválidos. Tente novamente.';
-    }
-
-    resposta.render('resposta_cadastro', { status, mensagem });
-});
+// Inicia o servidor
+app.listen(80, () => console.log("Servidor rodando na porta 80 🚀"));
