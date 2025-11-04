@@ -2,6 +2,7 @@ var http = require('http');
 var express = require('express');
 var colors = require('colors');
 var bodyParser = require('body-parser');
+var path = require('path'); // Incluindo o módulo 'path'
 
 var app = express();
 app.use(express.static('./public'));
@@ -10,30 +11,61 @@ app.use(bodyParser.json())
 app.set('view engine', 'ejs')
 app.set('views', './views');
 
+const USUARIOS = [{ email: 'admin@site.com', senha: '123' }]; 
+
 var server = http.createServer(app);
 server.listen(80);
+console.log('Servidor rodando...'.rainbow);
 
-console.log('Servidor rodando ...'.rainbow);
-
+//Inicia na página de projects
 app.get('/', function (requisicao, resposta){
-resposta.redirect('home.html')
-})
+    resposta.redirect('../LAB02_Projects/Projects.html');
+});
 
-app.get('/inicio', function (requisicao, resposta){
-var nome = requisicao.query.info;
-console.log(nome);
-})
 
-app.post('/inicio', function (requisicao, resposta){
-var data = requisicao.body.data;
-console.log(data);
-})
 
-app.get('/cadastro',function (requisicao, resposta){
-var nome = requisicao.query.nome;
-var sobrenome = requisicao.query.sobrenome;
-var nascimento = requisicao.query.nascimento;
-var civil = requisicao.query.civil;
+app.get('/cadastra',function (requisicao, resposta){
+    // [CORREÇÃO 2] Uso de path.join e __dirname para caminho absoluto
+    resposta.sendFile(path.join(__dirname, 'public', 'LAB08', 'cadastro.html'));
+});
 
-resposta.render('resposta_cadastro', {nome, sobrenome, nascimento, civil})
-})
+
+app.post('/cadastra', function (requisicao, resposta) {
+    
+    const { nomecompleto, email, senha } = requisicao.body;
+    
+    // Simulação de salvar o usuário
+    USUARIOS.push({ email, senha });
+    console.log(`Novo Usuário Cadastrado: ${email}`);
+
+    resposta.render('resposta_cadastro', { 
+        status: 'Sucesso no Cadastro!', 
+        mensagem: `O usuário ${nomecompleto} foi cadastrado com sucesso. Total de usuários: ${USUARIOS.length}.`
+    });
+});
+
+
+app.get('/login',function (requisicao, resposta){
+    // [CORREÇÃO 2] Uso de path.join e __dirname para caminho absoluto
+    resposta.sendFile(path.join(__dirname, 'public', 'LAB08', 'login.html'));
+});
+
+
+app.post('/login', function (requisicao, resposta) {
+   
+    const { email, senha } = requisicao.body;
+
+    
+    const usuarioEncontrado = USUARIOS.find(user => user.email === email && user.senha === senha);
+    
+    let status, mensagem;
+    if (usuarioEncontrado) {
+        status = 'Sucesso no Login!';
+        mensagem = `Bem-vindo(a), ${email}!`;
+    } else {
+        status = 'Falha no Login!';
+        mensagem = 'Email ou senha inválidos. Tente novamente.';
+    }
+
+    resposta.render('resposta_cadastro', { status, mensagem });
+});
