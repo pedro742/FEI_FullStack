@@ -1,0 +1,11 @@
+Servidor (Node.js + Express) Como começar um projeto
+
+1.  Defina a pasta raiz do projeto: servidor (neste exemplo)
+2.  Utilize o comando npm init (no terminal, na pasta raiz) para criar
+    um arquivo package.json
+3.  Instale os pacotes necessários: express (por enquanto, só este)
+    a.  Este passo criará a pasta node_modules
+4.  Organização: Dentro da pasta do projeto, crie as pastas public e
+    views:
+
+projeto node_modules public views package.json servidor.js
